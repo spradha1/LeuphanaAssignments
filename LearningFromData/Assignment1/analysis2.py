@@ -31,6 +31,9 @@ def learning_rates_to_mistakes():
   plt.ylabel('Mistakes')
   plt.show()
 
+  # note: if weights and threshold set to zero, learning rate has no influence
+  
+
 def maximal_margins_to_mistakes():
   x, y = pcp.generate_points(n=500, blob_centers=[(-5, -5), (-4.5, -4.5)])
   margins = np.arange(0.5, 10.1, 0.5)

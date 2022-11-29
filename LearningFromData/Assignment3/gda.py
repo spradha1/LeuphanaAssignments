@@ -73,7 +73,10 @@ if __name__ == '__main__':
   mu0, mu1 = calculate_mu(X, y)
   sigma = calculate_sigma(X, y, mu0, mu1)
 
-  # drawing the separating line
+  '''
+    drawing the separating line
+    Eqn: ln((1-phi)/phi) + (mu0-mu1)^T * sigma^-1 * x + (1/2)*(mu1^T * sigma^-1 * mu1 - mu0^T * sigma^-1 * mu0) = 0
+  '''
   S = np.linalg.inv(sigma)
   theta_12 = S.dot(mu1-mu0).flatten()
   w1 = mu0.T.dot(S.dot(mu0))

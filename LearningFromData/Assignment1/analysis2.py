@@ -12,19 +12,20 @@ def sample_sizes_to_mistakes():
   mistakes = []
   for portion in sample_sizes:
     px, py = x[:portion+1], y[:portion+1]
-    _, _, _, m = pcp.perceptron(px, py)
+    _, _, m = pcp.perceptron(px, py)
     mistakes.append(m)
   plt.plot(sample_sizes, mistakes, '.-')
   plt.xlabel('Sample size')
   plt.ylabel('Mistakes')
   plt.show()
 
+
 def learning_rates_to_mistakes():
   x, y = pcp.generate_points(n=5000)
   sample_etas = range(1, 26)
   mistakes = []
   for e in sample_etas:
-    _, _, _, m = pcp.perceptron(x, y, e)
+    _, _, m = pcp.perceptron(x, y, e)
     mistakes.append(m)
   plt.plot(sample_etas, mistakes, '.-')
   plt.xlabel('Learning rate')
@@ -39,7 +40,7 @@ def maximal_margins_to_mistakes():
   margins = np.arange(0.5, 10.1, 0.5)
   mistakes = []
   for m in margins:
-    _, _, _, m = pcp.perceptron(x, y)
+    _, _, m = pcp.perceptron(x, y)
     x[y == 1] += 0.5
     mistakes.append(m)
   plt.plot(margins, mistakes, '.-')

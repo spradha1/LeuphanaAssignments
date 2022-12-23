@@ -12,13 +12,13 @@ import matplotlib.pyplot as plt
   @params: RHS of an equation with LHS evaluating to one variable, range of input values for variables on RHS
   plots an equation
 '''
-def drawLine(eqn, x_range):  
-  x = np.array(x_range)  
+def drawLine(eqn, xs):  
+  x = np.array(xs)  
   y = eqn(x)
   plt.xlabel('x')
   plt.ylabel('y')
   plt.plot(x, y)  
-  plt.show()  
+  plt.show()
 
 # input equation
 def input_equation(x):
@@ -27,4 +27,4 @@ def input_equation(x):
 
 # Main function
 if __name__ == '__main__':
-  drawLine(input_equation, range(0, 10))
+  drawLine(input_equation, [-10, 10])

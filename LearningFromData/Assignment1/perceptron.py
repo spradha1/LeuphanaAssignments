@@ -27,9 +27,8 @@ def perceptron(x, y, eta=1):
         bk += eta*y[i]*math.pow(R, 2)
         k += 1
         errors = True
-    iters += 1
   
-  return [wk, bk, iters, k]
+  return [wk, bk, k]
 
 
 # check if data is linearly separable
@@ -43,15 +42,11 @@ def is_linearly_separable(pos_class, neg_class):
 def generate_points(n=100, blob_centers=[], cluster_std=1):
   if len(blob_centers) == 0:
     x, y = make_blobs(n_samples=n, n_features=2, centers=2, random_state=1)
-    if is_linearly_separable(x[y == 1], x[y == 0]):
-      y[y == 0] = -1  # changing the label from 0 to -1, important for PLA
-      return x, y
-    else:
-      return generate_points(n, blob_centers, cluster_std - 0.1)
   else:
     x, y = make_blobs(n_samples=n, n_features=2, centers=blob_centers, random_state=1, cluster_std=cluster_std)
-    if is_linearly_separable(x[y == 1], x[y == 0]):
-      y[y == 0] = -1
-      return x, y 
-    else:
-      return generate_points(n, blob_centers, cluster_std - 0.1)
+  
+  if is_linearly_separable(x[y == 1], x[y == 0]):
+    y[y == 0] = -1  # changing the label from 0 to -1, important for PLA
+    return x, y
+  else:
+    return generate_points(n, blob_centers, cluster_std - 0.1)

@@ -13,5 +13,5 @@ if __name__ == '__main__':
   ])
   y = np.array([-1, 1, -1, 1])
 
-  w, b, iters, k = pcp.perceptron(x, y)
-  print(f'Iterations: {iters}\nWeight corrections: {k}\nFinal weight vecotr: {w}\nFinal threshold: {b:.2f}')
+  w, b, k = pcp.perceptron(x, y)
+  print(f'Weight corrections: {k}\nFinal weight vecotr: {w}\nFinal threshold: {b:.2f}')

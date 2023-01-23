@@ -15,7 +15,7 @@ from sklearn.datasets import make_regression
 
 # generate 1D data for simplicity
 def gen_data(n):
-  X, y = make_regression(n_samples=n, n_features=1, n_targets=1, random_state=44)
+  X, y = make_regression(n_samples=n, n_features=1, n_targets=1, random_state=33, noise=1.0)
   return X, y
 
 

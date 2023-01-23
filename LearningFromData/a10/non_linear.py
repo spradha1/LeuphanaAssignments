@@ -10,36 +10,32 @@ import seaborn as sns
 sns.set_style("dark", {'axes.grid' : False})
 
 
+# binary classifier 
+def classify_2d(xs, w):
+  b, w1, w2 = w
+  return np.array([1 if w1*(x1**2) + w2*(x2**2) + b > 0 else 0 for x1, x2 in xs])
+
 '''
-  plot lines in 2D with feature transform hyperplane
+  plot colors in 2D by their labels
   params: weight vector, horizontal bounds of the graph (x1, x2)
 '''
-def plot_boundary(w, xr=(-2, 2)):
-  b, w1, w2 = w
+def plot_canvas(ws, xr=(-2, 2)):
   xlo, xhi = xr
-  x1s = np.linspace(start=xlo, stop=xhi, num=np.abs(xhi-xlo)*40 + 1)
+  xs = np.linspace(xlo, xhi, 250)
+  canvas = np.array(np.meshgrid(xs, xs)).T.reshape(-1, 2)
 
-  # plot only points that are valid
-  valid_x1s = np.array([])
-  # two sets of points for above and below x2 axis
-  pos_x2s, neg_x2s = np.array([]), np.array([])
-
-  for x1 in x1s:
-    val = -(w1/w2)*(x1**2) - b/w2
-    if val >= 0:
-      root = np.sqrt(val)
-      valid_x1s = np.insert(valid_x1s, 0, x1)
-      pos_x2s = np.insert(pos_x2s, 0, root)
-      neg_x2s = np.insert(neg_x2s, 0, -root)
-  
-  plt.plot(valid_x1s, pos_x2s, color='b', linestyle='dotted')
-  plt.plot(valid_x1s, neg_x2s, color='b', linestyle='dotted')
-  plt.xlabel('x1')
-  plt.xlabel('x2')
-  plt.title(f'Boundary for \u03C6(x) = (1, x1^2, x2^2) with {w=}')
-  plt.xlim(xlo, xhi)
-  plt.ylim(xlo, xhi)
-  plt.axis('equal')
+  fig, axs = plt.subplots(len(ws)//2, 2, figsize=(10, 8))
+  for (i, w) in enumerate(ws):
+    labels = classify_2d(canvas, w)
+    axc = axs[i//2, i%2]
+    axc.plot(canvas[labels==1, 0], canvas[labels==1, 1], 'm.', label='+ve')
+    axc.plot(canvas[labels==0, 0], canvas[labels==0, 1], 'k.', label='-ve')
+    axc.set_title(f'{w=}')
+    axc.set_aspect('equal')
+    axc.set_xlim(xlo, xhi)
+    axc.set_ylim(xlo, xhi)
+    axc.legend(loc='upper left')
+  fig.suptitle('Classification for 2D non-linear transforms $\phi$(x) = (1, x1^2, x2^2)')
   plt.tight_layout()
   plt.show()
       
@@ -53,5 +49,7 @@ if __name__ == "__main__":
     [1, -1, -2],
     [1, 1, -1]
   ]
-  for w in ws:
-    plot_boundary(w)
+
+  # plot color mesh for classified areas
+  plot_canvas(ws)
+  

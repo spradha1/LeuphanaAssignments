@@ -8,12 +8,13 @@ from shapely.geometry import Polygon
 from sklearn.datasets import make_blobs
 
 
-# perceptron learning algorithm for 2D points
+# perceptron learning algorithm
 def perceptron(x, y, eta=1):
-  k = 0
-  wk, bk = np.zeros(2), 0
-  # learning rate
-  R, iters = 0, 0
+  # input dimensions
+  d = len(x[0])
+  wk, bk = np.zeros(d), 0
+  # max norm & iteration counter
+  R, k = 0, 0
   for comps in x:
     R = max(R, math.sqrt( sum([math.pow(comp, 2) for comp in comps]) ) )
   errors = True
@@ -31,22 +32,22 @@ def perceptron(x, y, eta=1):
   return [wk, bk, k]
 
 
-# check if data is linearly separable
+# check if data is linearly separable (for 2D points only)
 def is_linearly_separable(pos_class, neg_class):
   pos_hull = ConvexHull(pos_class)
   neg_hull = ConvexHull(neg_class)
   return not Polygon(pos_hull.points).intersects(Polygon(neg_hull.points))
 
 
-# generate 2D points with desired features
-def generate_points(n=100, blob_centers=[], cluster_std=1):
+# generate linearly separable 2D points (no check for inputs other than 2D)
+def generate_points(n=100, d=2, blob_centers=[], cluster_std=1):
   if len(blob_centers) == 0:
-    x, y = make_blobs(n_samples=n, n_features=2, centers=2, random_state=1)
+    x, y = make_blobs(n_samples=n, n_features=d, centers=2, random_state=1)
   else:
-    x, y = make_blobs(n_samples=n, n_features=2, centers=blob_centers, random_state=1, cluster_std=cluster_std)
+    x, y = make_blobs(n_samples=n, n_features=d, centers=blob_centers, random_state=1, cluster_std=cluster_std)
   
-  if is_linearly_separable(x[y == 1], x[y == 0]):
+  if d != 2 or is_linearly_separable(x[y == 1], x[y == 0]):
     y[y == 0] = -1  # changing the label from 0 to -1, important for PLA
     return x, y
   else:
-    return generate_points(n, blob_centers, cluster_std - 0.1)
+    return generate_points(n, d, blob_centers, cluster_std - 0.1)

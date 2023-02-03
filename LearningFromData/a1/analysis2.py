@@ -1,8 +1,10 @@
-# analyze behavior of PLA on variation of inputs 
+# analyze behavior of PLA on with change in different variables
 
 import perceptron as pcp
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_style('dark', {'axes.grid' : False})
 
 
 def sample_sizes_to_mistakes():
@@ -14,10 +16,7 @@ def sample_sizes_to_mistakes():
     px, py = x[:portion+1], y[:portion+1]
     _, _, m = pcp.perceptron(px, py)
     mistakes.append(m)
-  plt.plot(sample_sizes, mistakes, '.-')
-  plt.xlabel('Sample size')
-  plt.ylabel('Mistakes')
-  plt.show()
+  return sample_sizes, mistakes, 'Sample size'
 
 
 def learning_rates_to_mistakes():
@@ -27,12 +26,7 @@ def learning_rates_to_mistakes():
   for e in sample_etas:
     _, _, m = pcp.perceptron(x, y, e)
     mistakes.append(m)
-  plt.plot(sample_etas, mistakes, '.-')
-  plt.xlabel('Learning rate')
-  plt.ylabel('Mistakes')
-  plt.show()
-
-  # note: if weights and threshold set to zero, learning rate has no influence
+  return sample_etas, mistakes, 'Learning rate'
   
 
 def maximal_margins_to_mistakes():
@@ -43,14 +37,39 @@ def maximal_margins_to_mistakes():
     _, _, m = pcp.perceptron(x, y)
     x[y == 1] += 0.5
     mistakes.append(m)
-  plt.plot(margins, mistakes, '.-')
-  plt.xlabel('Distance between centres')
-  plt.ylabel('Mistakes')
+  return margins, mistakes, 'Distance between centres'
+
+
+def dimensions_to_mistakes():
+  features = range(2, 13)
+  mistakes = []
+  for f in features:
+    x, y = pcp.generate_points(n=500, d=f)
+    _, _, m = pcp.perceptron(x, y)
+    mistakes.append(m)
+  return features, mistakes, 'Input dimensions'
+
+
+def plot_all(vals):
+  l = len(vals)
+  fig, axs = plt.subplots(l//2, 2, figsize=(l*5//2, 8))
+  for i in range(l):
+    ax = axs[i//2, i%2]
+    ax.plot(vals[i][0], vals[i][1], '.-')
+    ax.set_xlabel(vals[i][2])
+    ax.set_ylabel('Mistakes')
+  
+  fig.suptitle('Behaviour of PLA with change in variables')
+  plt.tight_layout()
   plt.show()
 
 
 # Main function
 if __name__ == '__main__':
-  sample_sizes_to_mistakes()
-  learning_rates_to_mistakes()
-  maximal_margins_to_mistakes()
+  res = []
+  res.append(sample_sizes_to_mistakes())
+  res.append(learning_rates_to_mistakes())
+  res.append(maximal_margins_to_mistakes())
+  res.append(dimensions_to_mistakes())
+
+  plot_all(res)

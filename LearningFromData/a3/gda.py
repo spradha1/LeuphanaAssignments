@@ -46,15 +46,15 @@ def calculate_probabilities(X, mu0, mu1, sigma):
 
 def plot_points_and_line(X, y, theta, domain, mu0, mu1, sigma):
   # plotting the data points
-  plt.plot(X[y == 1, 0], X[y == 1, 1], 'bx', alpha=0.3, label="Class: 1", zorder=1)
-  plt.plot(X[y == 0, 0], X[y == 0, 1], 'ro', alpha=0.3, label="Class: 0", zorder=1)
+  plt.plot(X[y == 1, 0], X[y == 1, 1], 'go', alpha=0.5, label="Class: 1", zorder=2)
+  plt.plot(X[y == 0, 0], X[y == 0, 1], 'rx', alpha=0.5, label="Class: 0", zorder=2)
   # plotting the probabilities
   w0_range, w1_range = np.meshgrid(domain, domain)
   X_domain = np.array(list(zip(np.ravel(w0_range), np.ravel(w1_range))))
   z_y0, z_y1 = calculate_probabilities(X_domain, mu0, mu1, sigma)
   z_y0, z_y1 = z_y0.reshape(w0_range.shape), z_y1.reshape(w0_range.shape)
-  plt.contour(w0_range, w1_range, z_y0, zorder=2)
-  plt.contour(w0_range, w1_range, z_y1, zorder=2)
+  plt.contour(w0_range, w1_range, z_y0, zorder=1)
+  plt.contour(w0_range, w1_range, z_y1, zorder=1)
   # plotting the decision boundary
   plt.plot(domain, discriminant(domain, theta), 'k-')
   plt.legend()
@@ -64,7 +64,7 @@ def plot_points_and_line(X, y, theta, domain, mu0, mu1, sigma):
 
 if __name__ == '__main__':
   # generating a 2-class dataset that is not linearly separable
-  X, y = make_blobs(250, n_features=2, centers=[(-1, -1), (1, 1)], random_state=33)
+  X, y = make_blobs(1000, n_features=2, centers=[(-1, -1), (1, 1)], random_state=33)
   # scaling the input
   X = preprocessing.scale(X)
 

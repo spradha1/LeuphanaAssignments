@@ -32,10 +32,11 @@ if __name__ == '__main__':
   # plot N vs. VC bound
   fig, ax = plt.subplots()
   ax.plot(Ns, bounds, c='#A6009A', ls='-')
-  ax.plot([Ns[0], Ns[-1]], [0, 0], 'g-')
+  # line for log(probability bound) = 0 to see where the bound becomes meaningful
+  ax.plot([Ns[0], Ns[-1]], [0, 0], color='g', linestyle="dotted")
   ax.set_xlabel('Sample size')
   ax.set_ylabel('VC bounds ($log_{10}$)')
-  ax.set_title('N & the VC dimension')
+  ax.set_title('N vs. VC bound, $\epsilon$=0.1')
   ax.grid(False)
   ax.set_facecolor('black')
   plt.tight_layout()

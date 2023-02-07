@@ -27,16 +27,17 @@ def widrow_hoff(X, y, iter, batch, eta=1e-2):
     if batch:
       # batch mode
       y_hat = np.dot(X, w).reshape(-1, 1)
-      gradient = (1/n)*np.dot(X.T, y_hat - y).reshape(-1, 1)
+      v = np.dot(X.T, y_hat - y).reshape(-1, 1)
     else:
       # stochastic mode
       i = np.random.randint(0, n)
       Xi, yi = np.array([X[i]]), np.array([y[i]])
       y_hat = np.dot(Xi, w).reshape(-1, 1)
-      gradient = (1/n)*np.dot(Xi.T, y_hat - yi).reshape(-1, 1)
+      v = np.dot(Xi.T, y_hat - yi).reshape(-1, 1)
 
-    # gradient formula used: (1/N) * eta * X^T * (Xw - y)
-    w -= gradient*eta
+    # gradient formula used: eta * X^T * (Xw - y) (normalized)
+    v = v/np.linalg.norm(v)
+    w -= v*eta
     w_history.append(w.flatten())
     loss_history.append(loss_func(X, y, w))
 
@@ -58,16 +59,25 @@ if __name__ == '__main__':
   X, y = df.loc[:, df.columns != 'residualSugar'], df[['residualSugar']]
   # adding intercept column
   X.insert(0, 'intercept', [1]*len(X))
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=99)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=33)
   np_X_train, np_y_train = np.array(X_train), np.array(y_train)
   np_X_test, np_y_test = np.array(X_test), np.array(y_test)
 
-  wbh, losses_b = widrow_hoff(np_X_train, np_y_train, 10000, True)
+  ws_b, losses_b = widrow_hoff(np_X_train, np_y_train, 25000, True, 0.02)
+  ws_s, losses_s = widrow_hoff(np_X_train, np_y_train, 25000, False, 0.02)
 
-  print(f'''Widrow-Hoff predicting residualSugar on training set batch mode:
-  Final weight vector: {wbh[-1]}
-  Final loss value: {losses_b[-1]}''')
+  # Batch
+  y_hat = np.dot(np_X_test, ws_b[-1])
+  print(f'''Batch mode:
+  Widrow-Hoff predicting residualSugar on training set:
+    Final weight vector: {ws_b[-1]}
+    Final loss value: {losses_b[-1]}
+  MSE for test set: {mean_squared_error(np_y_test, y_hat):.2f}\n''')
 
-  # Testing
-  y_hat = np.dot(np_X_test, wbh[-1])
-  print(f'''MSE for test set batch mode: {mean_squared_error(np_y_test, y_hat):.2f}''')
+  # Stochastic
+  y_hat = np.dot(np_X_test, ws_s[-1])
+  print(f'''Stochastic mode:
+  Widrow-Hoff predicting residualSugar on training set:
+    Final weight vector: {ws_s[-1]}
+    Final loss value: {losses_s[-1]}
+  MSE for test set: {mean_squared_error(np_y_test, y_hat):.2f}''')

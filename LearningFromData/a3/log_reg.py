@@ -1,4 +1,4 @@
-# simlate data for logisitic regression and further analysis
+# simulate data for logisitic regression and further analysis
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, confu
   gradient = - (1/N) * summation (yn*xn)/(1 + e^(yn*w^t*xn))
   returns: final weight vector after 'iter' updates
 '''
-def logistic_regression(X, y, iter, eta=1, w=None):
+def logistic_regression(X, y, iter, eta=0.01, w=None):
   
   # stipulations
   N, d = X.shape
@@ -22,7 +22,7 @@ def logistic_regression(X, y, iter, eta=1, w=None):
   y.reshape(-1, 1)
 
   for _ in range(iter):
-    gradient = (-1/N) * sum([(y[i] * X[i, :])/(1 + np.exp(y[i] * np.dot(w.T, X[i, :])) ) for i in range(d) ]) 
+    gradient = (-1/N) * sum([(y[i] * X[i, :])/(1 + np.exp(y[i] * np.dot(w.T, X[i, :])) ) for i in range(N) ]) 
     w -= eta*gradient
 
   return w, loss_func(X, y, w)
@@ -115,5 +115,5 @@ if __name__ == '__main__':
   plt.show()
 
   # Logistic regression plot
-  print(f'''PLotting separator line from logistic regression for test data ........''')
+  print(f'''Plotting separator line from logistic regression for test data ........''')
   plot_points_and_line(X_test, y_test, w)

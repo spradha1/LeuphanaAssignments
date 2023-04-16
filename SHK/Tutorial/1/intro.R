@@ -55,3 +55,6 @@ help.search('standard deviation')
 
 # graph
 plot(v1, v2)
+
+# while creating a new R file, save it with the '.R' extension as in <something.R>
+# do not save your R environment on closing RStudio

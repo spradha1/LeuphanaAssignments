@@ -94,7 +94,7 @@ if __name__ == '__main__':
   axs[0].plot(t, sa, 'b-', label='\u03B8 (rad)')
   axs[0].plot(t, va, 'r-', label='$\omega$ (rad $s^{-1}$)')
   axs[0].set_xlabel('Time (seconds)')
-  axs[0].legend(loc='lower left')
+  axs[0].legend(loc='upper right')
 
   axs[1].grid(False)
   axs[1].set_facecolor('black')

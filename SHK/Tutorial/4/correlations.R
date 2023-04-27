@@ -39,8 +39,8 @@ table(survey$pets)
 log(0)
 
 # add a value to remove zeros before taking the log
-hist(log(survey$siblings_num) + 1)
-hist(log(survey$pets) + 1)
+hist(log(survey$siblings_num + 1))
+hist(log(survey$pets + 1))
 
 # data is not normally distributed, so Spearman & Kendall rank correlation instead
 ?cor.test

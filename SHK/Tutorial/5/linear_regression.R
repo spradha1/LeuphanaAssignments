@@ -15,7 +15,7 @@ plot(df$tannin, df$growth)
 plot(df$tannin, df$growth, xlab="tannin concentration [micromole]", ylab="caterpillar growth [mg]", main="My funny plot", pch=18, col="darkblue", cex=2)
 
 # clear all plots
-dev.off(dev.list()["RStudioGD"]) 
+dev.off(dev.list()["RStudioGD"])
 
 # building linear model
 model <- lm(growth ~ tannin, data=df)

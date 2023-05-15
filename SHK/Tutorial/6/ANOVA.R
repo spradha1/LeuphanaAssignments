@@ -1,7 +1,7 @@
 # boxplot
 
 # data
-restaurant <- read.table("boxplot.txt", header =T)
+restaurant <- read.table("boxplot.txt", header=T)
 
 # inspect
 str(restaurant)
@@ -36,6 +36,7 @@ summary(df)
 boxplot(yield ~ soil, data=df)
 
 # R sorts alphabetical, if you want a custom order, change order by defining soil to be an ordered factor
+table(df$soil)
 df$soil <- factor(df$soil, levels=c("sand", "clay", "loam"))
 
 # checking sample size across our categorical variable
@@ -51,8 +52,8 @@ fligner.test(yield ~ soil, data=df)
 
 # 1: linear model
 model1 <- lm(yield ~ soil, data=df)
-anova(model1)
 summary(model1)
+anova(model1)
 plot(model1)
 
 # residuals are also supposed to be normally distributed
@@ -67,7 +68,6 @@ plot(model2)
 # Post-hoc-Test = to test every factor level against each other
 # Tukey's test
 TukeyHSD(model2)
-
 
 # now try it with fertilizer
 table(df$fertilizer)

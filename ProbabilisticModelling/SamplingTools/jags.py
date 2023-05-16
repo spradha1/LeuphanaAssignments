@@ -13,7 +13,7 @@ sns.set_style('dark', {'axes.grid' : False})
 # globals
 RAND=33
 CHAINS=2
-
+DATA_SIZE=100
 
 # main
 if __name__ == '__main__':
@@ -21,10 +21,9 @@ if __name__ == '__main__':
   np.random.seed(RAND)
 
   # data
-  y = np.random.randint(low=0, high=2, size=100)
-
+  y = np.random.randint(low=0, high=2, size=DATA_SIZE)
   # jags stuff
-  jags_data = {"y": list(y), "N": 100}
+  jags_data = {"y": list(y), "N": DATA_SIZE}
   parameters = ['theta']
   jags_model_string = '''
     model {

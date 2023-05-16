@@ -29,27 +29,33 @@ if __name__ == '__main__':
     theta = pm.Uniform('theta', lower=0, upper=1, transform=None)
 	  # likelihood
     y = pm.Bernoulli('y', p=theta, observed=flips)
-    trace = pm.sample(2000, tune=500, chains=CHAINS, progressbar=False, return_inferencedata=False)
-  
+    trace = pm.sample(2000, tune=500, chains=CHAINS, progressbar=False, return_inferencedata=True)
+    sampling_data = az.extract(trace)
+
+
   # plots
-  varname = trace.varnames[0]
-  samples = trace[varname]
+  samples = sampling_data['theta']
+  chain_nums = sampling_data['chain']
+  chains = [samples[chain_nums==n] for n in range(CHAINS)]
+  colors = ['violet', 'aquamarine']
+
   fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-  # prior samples distribution
-  sns.kdeplot(data=samples, fill=True, ax=axs[0], color='darkseagreen')
+  for c in range(CHAINS):
+    # prior samples distribution
+    sns.kdeplot(data=chains[c], fill=True, ax=axs[0], color=colors[c], alpha=0.4)
+    # sampling steps
+    sns.lineplot(data=chains[c], ax=axs[1], color=colors[c], alpha=0.4)
+
   axs[0].set_facecolor('black')
   axs[0].set_xlabel('Coin-flip heads probability')
   axs[0].set_ylabel('Probability density')
   axs[0].set_title('Prior samples distribution')
-  # sampling steps
-  sns.lineplot(data=samples, ax=axs[1], color='darkseagreen')
+  
   axs[1].set_facecolor('black')
   axs[1].set_xlabel('Sampling step #')
   axs[1].set_ylabel('Sampled value $\\theta$')
   axs[1].set_title('MCMC sampling of coin-flip heads probabilities')
 
-  fig.suptitle("MCMC sampling with PyMC")
+  fig.suptitle(f'MCMC sampling with PyMC with {CHAINS} chains')
   plt.tight_layout()
-  # plot chain distributions separately with arviz, setting return_inferencedata=True in sampler
-  # az.plot_trace(trace, combined=True)
   plt.show()

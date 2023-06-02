@@ -1,6 +1,6 @@
 # Correlations
 
-# lcrating some data
+# creating some data
 v1 <- c(94,73,59,80,93,85,66,79,77,91)
 v2 <- c(17,13,12,15,16,14,16,16,18,19)
 

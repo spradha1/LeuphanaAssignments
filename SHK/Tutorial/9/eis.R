@@ -1,5 +1,5 @@
 # The data was collected on 200 random citizens and are scores on various tests, including a video game and a puzzle. 
-# The data also includes the person’s favorite flavor of ice cream – vanilla (1), chocolate (2) or strawberry (3).
+# The data also includes the person’s favorite flavor of ice cream – strawberry(1), chocolate (2) or vanilla(3).
 eis <- read.csv("eis.csv", header=T)
 str(eis)
 summary(eis)

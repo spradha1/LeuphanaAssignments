@@ -10,7 +10,7 @@ from sklearn.metrics import mean_squared_error
 
 
 """
-  Widrow-Hoff learning algorithmin batch and stochastic mode
+  Widrow-Hoff learning algorithm in batch and stochastic mode
   :param X: matrix of independent variables (numpy array)
   :param y: corresponding labels
   :param iter: number of iterations of gradient descent - default: 250

@@ -201,6 +201,3 @@ misclassified_indices = # TODO
 for idx in misclassified_indices:
     fig, ax = plt.subplots()
     ax.imshow # TODO
-
-
-

@@ -1,43 +1,35 @@
+# Logistic regression in pytorch for MNIST 1s & 7s
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.utils.data import Subset
 
 import torchvision
 import torchvision.transforms as transforms
 
-import numpy as np
-import matplotlib.pyplot as plt
-
 
 
 # Neural Network
-class Net(nn.Module):
+class Lognet(nn.Module):
+
   def __init__(self):
     super().__init__()
-    self.conv1 = nn.Conv2d(1, 6, 5)
+    self.conv1 = nn.Conv2d(1, 4, 5)
     self.pool = nn.MaxPool2d(2, 2)
-    self.conv2 = nn.Conv2d(6, 16, 5)
-    self.fc1 = nn.Linear(16 * 4 * 4, 120)
-    self.fc2 = nn.Linear(120, 84)
-    self.fc3 = nn.Linear(84, 10)
+    self.conv2 = nn.Conv2d(4, 8, 5)
+    self.fc1 = nn.Linear(8 * 4 * 4, 64)
+    self.fc2 = nn.Linear(64, 1)
 
   def forward(self, x):
     x = self.pool(F.relu(self.conv1(x)))
     x = self.pool(F.relu(self.conv2(x)))
     x = torch.flatten(x, 1) # flatten all dimensions except batch
     x = F.relu(self.fc1(x))
-    x = F.relu(self.fc2(x))
-    x = self.fc3(x)
+    x = F.sigmoid(self.fc2(x))
     return x
 
-
-# show image
-def imshow(img):
-  img = img / 2 + 0.5 #unnormalize
-  npimg = img.numpy()
-  plt.imshow(np.transpose(npimg, (1, 2, 0)))
-  plt.show()
 
 
 # main function
@@ -49,79 +41,77 @@ if __name__ == '__main__':
     transforms.ToTensor(),
     transforms.Normalize((0.5), (0.5))
   ])
-
   batch_size = 32
-
   trainset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+  testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+  
+  # filter 1s and 7s
+
+  tr_y = trainset.targets
+  tr_ids1n7 = [i for i, sample in enumerate(tr_y) if sample in [1, 7]]
+  trainset.targets[tr_y == 1] = 0
+  trainset.targets[tr_y == 7] = 1
+  trainset = Subset(trainset, tr_ids1n7)
   trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
 
-  testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+  ts_y = testset.targets
+  ts_ids1n7 = [i for i, sample in enumerate(ts_y) if sample in [1, 7]]
+  testset.targets[ts_y == 1] = 0
+  testset.targets[ts_y == 7] = 1
+  testset = Subset(testset, ts_ids1n7)
   testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
 
+  # model
+  lognet = Lognet()
+  learning_rate = 5e-4
+  criterion = nn.BCELoss()
+  optimizer = torch.optim.Adam(lognet.parameters(), lr=learning_rate)
+  epochs = 15
 
-  # image display
-  # dataiter = iter(trainloader)
-  # images, labels = next(dataiter)
-  # imshow(torchvision.utils.make_grid(images))
-
-  # # print labels
-  # print(' '.join(f'{labels[j]}' for j in range(batch_size)))
-
-  # neural network
-  net = Net()
-  criterion = nn.CrossEntropyLoss()
-  optimizer = optim.Adam(net.parameters(), lr=5e-5, weight_decay=0.75)
 
   # training
-  epochs = 1
-  batches = len(trainloader)
-  stat_log = batches // 9
-  
+
   print(f'''Training configs:
     Batch-size:{batch_size}
     Training instances:{len(trainset)}
     Epochs:{epochs}
-    Batches:{batches}
-    Update per {stat_log} batches
   ''')
-
   for epoch in range(epochs):  # loop over the dataset multiple times
-    print(f"------------ Epoch #{epoch+1} ------------")
     for i, data in enumerate(trainloader):
       # get the inputs; data is a list of [inputs, labels]
       inputs, labels = data
+      labels = labels.to(torch.float32)
       # zero the parameter gradients
       optimizer.zero_grad()
       # forward + backward + optimize
-      outputs = net(inputs)
-      loss = criterion(outputs, labels)
+      outputs = lognet(inputs)
+      loss = criterion(outputs.reshape(-1, ), labels)
       loss.backward()
       optimizer.step()
-      # print statistics
-      if (i + 1) % stat_log == 0 or i + 1 == batches:
-        print(f'Epoch: {epoch + 1} | Batches:{i + 1:5d} | Loss: {loss.item():.4f}')
-
-  print('\nFinished Training\n')
-
-
+    # print statistics
+    print(f'Epoch: {str(epoch + 1):2} | Loss: {loss.item():.6f}') 
+    
   # testing
-
-  correct = 0
-  total = 0
-
-  print(f'''Testing configs:
+  print(f'''\nTesting configs:
     Testing batches: {len(testloader)}
     Testing instances: {len(testset)}
   ''')
+  correct = 0
+  total = 0
   
   with torch.no_grad(): # don't need to calculate the gradients for testing
     for data in testloader:
       images, labels = data
       # calculate outputs by running images through the network
-      outputs = net(images)
+      outputs = lognet(images)
       # the class with the highest energy is what we choose as prediction
-      _, predicted = torch.max(outputs.data, 1)
+      predicted = outputs.data.flatten().apply_(lambda x: 1 if x > 0.5 else 0)
       total += labels.numel()
       correct += (predicted == labels).sum().item()
+  
+  accuracy = 100*correct/total
+  print(f'Test accuracy: {accuracy:.3f}%')
 
-  print(f'Accuracy on {total} test images: {100*correct/total:.3f}%')
+  # save model
+  PATH = './models/exe4_2_lognet.pt'
+  torch.save(lognet.state_dict(), PATH)

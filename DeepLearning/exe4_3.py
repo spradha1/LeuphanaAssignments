@@ -18,7 +18,7 @@ from exe4_2 import Lognet
 # main function
 if __name__ == '__main__':
 
-   # prepare data
+  # prepare data
 
   transform = transforms.Compose([
     transforms.ToTensor(),

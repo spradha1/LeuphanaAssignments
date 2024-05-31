@@ -70,7 +70,7 @@ if __name__ == '__main__':
   # neural network
   net = Net()
   criterion = nn.CrossEntropyLoss()
-  optimizer = optim.Adam(net.parameters(), lr=5e-5, weight_decay=0.75)
+  optimizer = optim.Adam(net.parameters(), lr=5e-5, weight_decay=1e-4)
 
   # training
   epochs = 1
